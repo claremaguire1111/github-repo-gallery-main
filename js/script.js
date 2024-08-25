@@ -4,13 +4,14 @@ const overviewDiv = document.querySelector('.overview');
 // Store your GitHub username
 const username = "ClareMaguire1111";
 
+// Global variable to select the unordered list to display the repos list
+const reposList = document.querySelector('.repo-list'); // Assuming the <ul> has a class of "repo-list"
+
 // Function to display the fetched user information on the page
 function displayUserInfo(data) {
-    // Create a new div and give it a class of "user-info"
     const userInfoDiv = document.createElement('div');
     userInfoDiv.className = 'user-info';
 
-    // Populate the div with the user information using innerHTML
     userInfoDiv.innerHTML = `
       <figure>
         <img alt="user avatar" src="${data.avatar_url}" />
@@ -23,8 +24,10 @@ function displayUserInfo(data) {
       </div>
     `;
 
-    // Append the div to the overview element
     overviewDiv.appendChild(userInfoDiv);
+
+    // Call the function to fetch the repositories after displaying the user info
+    fetchRepos();
 }
 
 // Async function to fetch information from GitHub
@@ -33,12 +36,43 @@ async function fetchGitHubProfile() {
     const data = await response.json();
     console.log(data);
     
-    // Call the displayUserInfo function with the fetched data
     displayUserInfo(data);
+}
+
+// Async function to fetch the repositories
+async function fetchRepos() {
+    // Fetch the repositories from GitHub, sorted by the most recently updated and limited to 100 per page
+    const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
+    
+    // Resolve the JSON response
+    const reposData = await reposResponse.json();
+    
+    // Log the response to check the data
+    console.log(reposData);
+    
+    // Call the function to display the repos
+    displayRepos(reposData);
+}
+
+// Function to display information about each repo
+function displayRepos(repos) {
+    repos.forEach(repo => {
+        // Create a list item for each repo
+        const repoItem = document.createElement('li');
+        repoItem.className = 'repo';
+        
+        // Create an <h3> element with the repo name
+        const repoName = document.createElement('h3');
+        repoName.textContent = repo.name;
+        
+        // Append the <h3> to the list item
+        repoItem.appendChild(repoName);
+        
+        // Append the list item to the unordered list (reposList)
+        reposList.appendChild(repoItem);
+    });
 }
 
 // Call the function to fetch and display the GitHub profile information
 fetchGitHubProfile();
-
-
 
