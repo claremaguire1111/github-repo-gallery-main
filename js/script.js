@@ -14,6 +14,12 @@ const reposSection = document.querySelector('.repos');
 // Select the section with a class of "repo-data" where the individual repo data will appear
 const repoDataSection = document.querySelector('.repo-data');
 
+// Global variable to select the "Back to Repo Gallery" button
+const backToGalleryButton = document.querySelector('.view-repos');
+
+// Global variable to select the input with the "Search by name" placeholder
+const filterInput = document.querySelector('input[placeholder="Search by name"]');
+
 // Function to display the fetched user information on the page
 function displayUserInfo(data) {
     const userInfoDiv = document.createElement('div');
@@ -63,6 +69,9 @@ async function fetchRepos() {
 
 // Function to display information about each repo
 function displayRepos(repos) {
+    // Show the filter input element
+    filterInput.classList.remove('hide');
+    
     repos.forEach(repo => {
         // Create a list item for each repo
         const repoItem = document.createElement('li');
@@ -138,6 +147,9 @@ function displayRepoInfo(repoInfo, languages) {
     // Unhide (show) the "repo-data" element and hide the "repos" element
     repoDataSection.classList.remove('hide');
     reposSection.classList.add('hide');
+    
+    // Show the "Back to Repo Gallery" button
+    backToGalleryButton.classList.remove('hide');
 }
 
 // Event listener for the click event on the repo list
@@ -151,6 +163,35 @@ reposList.addEventListener('click', (e) => {
     }
 });
 
+// Event listener for the click event on the "Back to Repo Gallery" button
+backToGalleryButton.addEventListener('click', () => {
+    // Unhide the repos section
+    reposSection.classList.remove('hide');
+    // Hide the individual repo data section
+    repoDataSection.classList.add('hide');
+    // Hide the "Back to Repo Gallery" button
+    backToGalleryButton.classList.add('hide');
+});
+
+// Event listener for the "input" event on the search box
+filterInput.addEventListener('input', (e) => {
+    // Capture the value of the search text
+    const searchText = e.target.value.toLowerCase();
+    console.log(searchText);  // Log to confirm capturing the input value
+    
+    // Select all elements with the class "repo"
+    const repos = document.querySelectorAll('.repo');
+    
+    // Loop through each repo and filter based on the search text
+    repos.forEach(repo => {
+        const repoText = repo.innerText.toLowerCase();
+        if (repoText.includes(searchText)) {
+            repo.classList.remove('hide');
+        } else {
+            repo.classList.add('hide');
+        }
+    });
+});
+
 // Call the function to fetch and display the GitHub profile information
 fetchGitHubProfile();
-
